@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent and ai metadata files
+AGENTS.md
+AGENTS*
+CLAUDE.md
+CLAUDE*
+.agents/
+.gemini/
+*.log
