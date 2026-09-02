@@ -14,9 +14,9 @@ export default function Hero() {
   const rawBadge = hero.badge || defaultHero.badge || "";
   const displayBadge =
     rawBadge &&
-    !rawBadge.toLowerCase().includes("solusi terpadu") &&
-    !rawBadge.toLowerCase().includes("solusi digital terpadu") &&
-    !rawBadge.toLowerCase().includes("digital startup & engineering")
+      !rawBadge.toLowerCase().includes("solusi terpadu") &&
+      !rawBadge.toLowerCase().includes("solusi digital terpadu") &&
+      !rawBadge.toLowerCase().includes("digital startup & engineering")
       ? rawBadge
       : "";
 
@@ -96,11 +96,8 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-neutral-600 text-base md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed"
         >
-          {(hero.subtitle ||
-            "Dari website profesional, aplikasi mobile canggih, hingga desain yang memukau dan reparasi perangkat semua ada di satu tempat."
-          )
-            .replace(/ — /g, " ")
-            .replace(/ - /g, " ")}
+          {hero.subtitle ||
+            "Kami membangun website performa tinggi, aplikasi mobile modern, desain antarmuka presisi, dan perbaikan perangkat berstandar industri."}
         </motion.p>
 
         {/* CTA Buttons */}
