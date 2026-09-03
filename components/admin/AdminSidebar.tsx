@@ -6,7 +6,6 @@ import {
   Sparkles,
   Settings2,
   FolderKanban,
-  MessageSquare,
   Tag,
   HelpCircle,
   Phone,
@@ -30,19 +29,17 @@ const navItems = [
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
 ];
 
-interface AdminSidebarProps {
-  mobileOpen: boolean;
+interface SidebarContentProps {
+  pathname: string;
   onClose: () => void;
+  signOut: () => void;
 }
 
-export default function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps) {
-  const pathname = usePathname();
-  const { signOut } = useAuth();
-
+function SidebarContent({ pathname, onClose, signOut }: SidebarContentProps) {
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
-  const SidebarContent = () => (
+  return (
     <div className="flex flex-col h-full bg-black text-white font-mono">
       {/* Brand Header */}
       <div className="flex items-center justify-between gap-3 px-6 py-6 border-b border-neutral-800">
@@ -71,7 +68,7 @@ export default function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps)
       {/* Nav list */}
       <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
         <div className="px-3 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">
-          // NAVIGATION
+          {"// NAVIGATION"}
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -114,25 +111,35 @@ export default function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps)
       </div>
     </div>
   );
+}
+
+interface AdminSidebarProps {
+  mobileOpen: boolean;
+  onClose: () => void;
+}
+
+export default function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps) {
+  const pathname = usePathname();
+  const { signOut } = useAuth();
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-60 flex-shrink-0 h-screen sticky top-0 border-r border-neutral-800">
-        <SidebarContent />
+      <aside className="hidden lg:flex flex-col w-60 flex-shrink-0 h-screen sticky top-0 border-r border-neutral-800 print:hidden">
+        <SidebarContent pathname={pathname} onClose={onClose} signOut={signOut} />
       </aside>
 
       {/* Mobile Drawer */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-sm print:hidden"
           onClick={onClose}
         >
           <aside
             className="w-64 h-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <SidebarContent />
+            <SidebarContent pathname={pathname} onClose={onClose} signOut={signOut} />
           </aside>
         </div>
       )}

@@ -31,12 +31,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a] text-neutral-100 font-sans">
+    <div className="flex min-h-screen bg-[#0a0a0a] text-neutral-100 font-sans print:bg-white print:min-h-0 print:block">
       <AdminSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0 bg-[#0e0e0e]">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0e0e0e] print:bg-white print:block">
         {/* Mobile topbar */}
-        <div className="lg:hidden flex items-center justify-between px-5 py-4 sticky top-0 z-30 bg-black/90 backdrop-blur-md border-b border-neutral-800">
+        <div className="lg:hidden flex items-center justify-between px-5 py-4 sticky top-0 z-30 bg-black/90 backdrop-blur-md border-b border-neutral-800 print:hidden">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
@@ -55,12 +55,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Page content */}
-        <main className="flex-1 p-6 sm:p-8 md:p-10 max-w-6xl w-full mx-auto">
+        <main className="flex-1 p-6 sm:p-8 md:p-10 max-w-6xl w-full mx-auto print:p-0 print:m-0 print:max-w-none print:w-full">
           {children}
         </main>
       </div>
 
-      <ToastContainer />
+      <div className="print:hidden">
+        <ToastContainer />
+      </div>
     </div>
   );
 }

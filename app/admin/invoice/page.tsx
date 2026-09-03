@@ -207,8 +207,9 @@ export default function AdminInvoicePage() {
   };
 
   return (
-    <div className="space-y-8 font-sans">
-      {/* Page Header */}
+    <div className="font-sans">
+      <div className="space-y-8 print:hidden">
+        {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -545,6 +546,7 @@ export default function AdminInvoicePage() {
           </div>
         </div>
       )}
+      </div>
 
       {/* Form Modal (Create / Edit) */}
       {isFormOpen && (

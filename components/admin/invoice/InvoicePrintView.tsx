@@ -64,43 +64,40 @@ Terima kasih atas kerja samanya!`;
   return (
     <>
       {/* Scoped print CSS to ensure clean A4 output without admin UI chrome */}
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          #print-invoice-sheet,
-          #print-invoice-sheet * {
-            visibility: visible;
-          }
-          #print-invoice-sheet {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 12mm 15mm !important;
-            box-shadow: none !important;
-            border: none !important;
-            background: #ffffff !important;
-            color: #111827 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          @page {
-            size: A4 portrait;
-            margin: 0;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-      `}</style>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @page {
+              size: A4 portrait;
+              margin: 10mm 15mm;
+            }
+            @media print {
+              html, body {
+                background: #ffffff !important;
+                color: #111827 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              #print-invoice-sheet {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                page-break-inside: avoid !important;
+              }
+            }
+          `,
+        }}
+      />
 
       {/* Modal Wrapper */}
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex flex-col items-center p-3 sm:p-6 no-print">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex flex-col items-center p-3 sm:p-6 print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:overflow-visible print:block">
         {/* Floating Top Toolbar */}
-        <div className="sticky top-2 z-20 w-full max-w-4xl bg-[#141414]/90 backdrop-blur-md border border-neutral-800 text-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl mb-4">
+        <div className="sticky top-2 z-20 w-full max-w-4xl bg-[#141414]/90 backdrop-blur-md border border-neutral-800 text-white rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl mb-4 print:hidden">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-700 flex items-center justify-center">
               <FileCheck className="w-4 h-4 text-white" />
@@ -154,7 +151,7 @@ Terima kasih atas kerja samanya!`;
         {/* Printable Paper Canvas (A4 simulation) */}
         <div
           id="print-invoice-sheet"
-          className="w-full max-w-4xl bg-white text-[#111827] shadow-2xl rounded-xl p-8 sm:p-12 font-sans border border-neutral-200 transition-all"
+          className="w-full max-w-4xl bg-white text-[#111827] shadow-2xl rounded-xl p-8 sm:p-12 font-sans border border-neutral-200 transition-all print:p-0 print:m-0 print:max-w-none print:shadow-none print:border-none print:rounded-none print:w-full print:text-black print:bg-white"
         >
           {/* Top Brand Header */}
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6 pb-6 border-b-2 border-neutral-200">
