@@ -102,3 +102,54 @@ export interface CMSData {
   pricing: PricingPlan[];
   faq: FAQItem[];
 }
+
+// ─── Invoice ──────────────────────────────────────────────────────────────
+export type InvoiceStatus = "unpaid" | "paid" | "draft" | "cancelled";
+export type InvoiceItemType = "service" | "pricing" | "custom";
+
+export interface InvoiceItem {
+  id: string;
+  name: string;
+  description?: string;
+  type: InvoiceItemType;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface InvoiceClient {
+  name: string;
+  company?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface InvoicePaymentInfo {
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  notes?: string;
+}
+
+export interface InvoiceDocument {
+  id: string;
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate: string;
+  status: InvoiceStatus;
+  client: InvoiceClient;
+  items: InvoiceItem[];
+  subtotal: number;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
+  discountAmount: number;
+  taxRate: number;
+  taxAmount: number;
+  grandTotal: number;
+  notes?: string;
+  paymentInfo: InvoicePaymentInfo;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
