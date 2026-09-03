@@ -26,6 +26,15 @@ export function generateInvoiceNumber(existingCount = 0, date: Date = new Date()
 }
 
 /**
+ * Generate unique item ID for invoice line items.
+ */
+export function createInvoiceItemId(prefix = "item"): string {
+  const rand = Math.random().toString(36).substring(2, 8);
+  const time = Date.now().toString(36);
+  return `${prefix}-${time}-${rand}`;
+}
+
+/**
  * Safely parse price string from CMS pricing plans (e.g. "999", "2.999", "Custom", "Rp 1.500.000") into a raw numeric value.
  */
 export function parsePriceStringToNumber(priceStr: string | number): number {

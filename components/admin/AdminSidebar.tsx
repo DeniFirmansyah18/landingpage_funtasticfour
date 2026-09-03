@@ -14,6 +14,7 @@ import {
   ExternalLink,
   X,
   BarChart3,
+  FileText,
 } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
 
@@ -23,6 +24,7 @@ const navItems = [
   { label: "Layanan", href: "/admin/layanan", icon: Settings2 },
   { label: "Portfolio", href: "/admin/portfolio", icon: FolderKanban },
   { label: "Harga", href: "/admin/harga", icon: Tag },
+  { label: "Invoice", href: "/admin/invoice", icon: FileText },
   { label: "FAQ", href: "/admin/faq", icon: HelpCircle },
   { label: "Kontak", href: "/admin/kontak", icon: Phone },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },

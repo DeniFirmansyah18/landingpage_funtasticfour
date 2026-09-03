@@ -15,6 +15,7 @@ import {
   AlertCircle,
   BarChart3,
   ArrowUpRight,
+  FileText,
 } from "lucide-react";
 import { useCollectionCount, seedCollection, seedDocument, getCollection } from "@/lib/hooks/useFirestore";
 import {
@@ -33,9 +34,10 @@ const sections = [
   { label: "Pilar Layanan", href: "/admin/layanan", icon: Settings2, collection: "services", code: "02" },
   { label: "Karya / Portfolio", href: "/admin/portfolio", icon: FolderKanban, collection: "portfolio", code: "03" },
   { label: "Paket & Harga", href: "/admin/harga", icon: Tag, collection: "pricing", code: "04" },
-  { label: "Pertanyaan FAQ", href: "/admin/faq", icon: HelpCircle, collection: "faq", code: "05" },
-  { label: "Info Kontak", href: "/admin/kontak", icon: Phone, collection: null, code: "06" },
-  { label: "Google Analytics", href: "/admin/analytics", icon: BarChart3, collection: null, code: "07" },
+  { label: "Invoice Tagihan", href: "/admin/invoice", icon: FileText, collection: "invoices", code: "05" },
+  { label: "Pertanyaan FAQ", href: "/admin/faq", icon: HelpCircle, collection: "faq", code: "06" },
+  { label: "Info Kontak", href: "/admin/kontak", icon: Phone, collection: null, code: "07" },
+  { label: "Google Analytics", href: "/admin/analytics", icon: BarChart3, collection: null, code: "08" },
 ];
 
 function StatCard({

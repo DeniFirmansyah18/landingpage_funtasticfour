@@ -8,8 +8,6 @@ import {
   X,
   Copy,
   Check,
-  Building2,
-  Calendar,
   CreditCard,
   FileCheck,
 } from "lucide-react";

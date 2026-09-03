@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type {
   InvoiceDocument,
   InvoiceItem,
@@ -12,6 +12,7 @@ import {
   generateInvoiceNumber,
   parsePriceStringToNumber,
   calculateInvoiceTotals,
+  createInvoiceItemId,
   defaultInvoicePaymentInfo,
   defaultInvoiceNotes,
 } from "@/lib/invoice-utils";
@@ -30,14 +31,8 @@ import {
   Loader2,
   Package,
   Wrench,
-  Percent,
-  Banknote,
   ChevronDown,
-  Building2,
   User,
-  Phone,
-  Mail,
-  MapPin,
 } from "lucide-react";
 
 interface InvoiceFormModalProps {
@@ -64,93 +59,75 @@ export default function InvoiceFormModal({
   const availableServices = dbServices.length > 0 ? dbServices : defaultServices;
   const availablePricing = dbPricing.length > 0 ? dbPricing : defaultPricing;
 
-  // Form states
-  const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [issueDate, setIssueDate] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [status, setStatus] = useState<InvoiceStatus>("unpaid");
+  // Form states initialized directly from initialData / defaults
+  const [invoiceNumber, setInvoiceNumber] = useState(
+    () => initialData?.invoiceNumber || generateInvoiceNumber(existingCount)
+  );
+  const [issueDate, setIssueDate] = useState(() => {
+    if (initialData?.issueDate) return initialData.issueDate;
+    return new Date().toISOString().split("T")[0];
+  });
+  const [dueDate, setDueDate] = useState(() => {
+    if (initialData?.dueDate) return initialData.dueDate;
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split("T")[0];
+  });
+  const [status, setStatus] = useState<InvoiceStatus>(
+    () => initialData?.status || "unpaid"
+  );
 
   // Client states
-  const [clientName, setClientName] = useState("");
-  const [clientCompany, setClientCompany] = useState("");
-  const [clientPhone, setClientPhone] = useState("");
-  const [clientEmail, setClientEmail] = useState("");
-  const [clientAddress, setClientAddress] = useState("");
+  const [clientName, setClientName] = useState(() => initialData?.client?.name || "");
+  const [clientCompany, setClientCompany] = useState(
+    () => initialData?.client?.company || ""
+  );
+  const [clientPhone, setClientPhone] = useState(
+    () => initialData?.client?.phone || ""
+  );
+  const [clientEmail, setClientEmail] = useState(
+    () => initialData?.client?.email || ""
+  );
+  const [clientAddress, setClientAddress] = useState(
+    () => initialData?.client?.address || ""
+  );
 
   // Items state
-  const [items, setItems] = useState<InvoiceItem[]>([]);
+  const [items, setItems] = useState<InvoiceItem[]>(() => {
+    if (initialData?.items && initialData.items.length > 0) {
+      return [...initialData.items];
+    }
+    return [
+      {
+        id: createInvoiceItemId("item"),
+        name: "",
+        description: "",
+        type: "custom",
+        quantity: 1,
+        unitPrice: 0,
+        total: 0,
+      },
+    ];
+  });
 
   // Calculation states
-  const [discountType, setDiscountType] = useState<"percentage" | "fixed">("percentage");
-  const [discountValue, setDiscountValue] = useState<number>(0);
-  const [taxRate, setTaxRate] = useState<number>(0);
+  const [discountType, setDiscountType] = useState<"percentage" | "fixed">(
+    () => initialData?.discountType || "percentage"
+  );
+  const [discountValue, setDiscountValue] = useState<number>(
+    () => initialData?.discountValue || 0
+  );
+  const [taxRate, setTaxRate] = useState<number>(() => initialData?.taxRate || 0);
 
   // Payment info & notes
-  const [paymentInfo, setPaymentInfo] = useState(defaultInvoicePaymentInfo);
-  const [notes, setNotes] = useState(defaultInvoiceNotes);
+  const [paymentInfo, setPaymentInfo] = useState(
+    () => initialData?.paymentInfo || defaultInvoicePaymentInfo
+  );
+  const [notes, setNotes] = useState(() => initialData?.notes || defaultInvoiceNotes);
 
   const [saving, setSaving] = useState(false);
   const [showPricingPicker, setShowPricingPicker] = useState(false);
   const [showServicePicker, setShowServicePicker] = useState(false);
-
-  // Initialize or reset form
-  useEffect(() => {
-    if (!isOpen) return;
-
-    if (initialData) {
-      setInvoiceNumber(initialData.invoiceNumber || "");
-      setIssueDate(initialData.issueDate || "");
-      setDueDate(initialData.dueDate || "");
-      setStatus(initialData.status || "unpaid");
-
-      setClientName(initialData.client?.name || "");
-      setClientCompany(initialData.client?.company || "");
-      setClientPhone(initialData.client?.phone || "");
-      setClientEmail(initialData.client?.email || "");
-      setClientAddress(initialData.client?.address || "");
-
-      setItems(initialData.items && initialData.items.length > 0 ? [...initialData.items] : []);
-      setDiscountType(initialData.discountType || "percentage");
-      setDiscountValue(initialData.discountValue || 0);
-      setTaxRate(initialData.taxRate || 0);
-
-      setPaymentInfo(initialData.paymentInfo || defaultInvoicePaymentInfo);
-      setNotes(initialData.notes || defaultInvoiceNotes);
-    } else {
-      const today = new Date();
-      const nextWeek = new Date();
-      nextWeek.setDate(today.getDate() + 7);
-
-      setInvoiceNumber(generateInvoiceNumber(existingCount, today));
-      setIssueDate(today.toISOString().split("T")[0]);
-      setDueDate(nextWeek.toISOString().split("T")[0]);
-      setStatus("unpaid");
-
-      setClientName("");
-      setClientCompany("");
-      setClientPhone("");
-      setClientEmail("");
-      setClientAddress("");
-
-      setItems([
-        {
-          id: "item-1",
-          name: "",
-          description: "",
-          type: "custom",
-          quantity: 1,
-          unitPrice: 0,
-          total: 0,
-        },
-      ]);
-
-      setDiscountType("percentage");
-      setDiscountValue(0);
-      setTaxRate(0);
-      setPaymentInfo(defaultInvoicePaymentInfo);
-      setNotes(defaultInvoiceNotes);
-    }
-  }, [isOpen, initialData, existingCount]);
 
   if (!isOpen) return null;
 
@@ -158,7 +135,11 @@ export default function InvoiceFormModal({
   const totals = calculateInvoiceTotals(items, discountType, discountValue, taxRate);
 
   // Handlers for Items
-  const handleItemChange = (index: number, field: keyof InvoiceItem, value: any) => {
+  const handleItemChange = (
+    index: number,
+    field: keyof InvoiceItem,
+    value: string | number
+  ) => {
     setItems((prev) => {
       const next = [...prev];
       const target = { ...next[index], [field]: value };
@@ -176,7 +157,7 @@ export default function InvoiceFormModal({
 
   const handleAddItem = (type: "custom" = "custom") => {
     const newItem: InvoiceItem = {
-      id: "item-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
+      id: createInvoiceItemId("item"),
       name: "",
       description: "",
       type,
@@ -190,7 +171,7 @@ export default function InvoiceFormModal({
   const handleAddFromPricing = (plan: PricingPlan) => {
     const priceNum = parsePriceStringToNumber(plan.priceMonthly);
     const newItem: InvoiceItem = {
-      id: "prc-" + plan.id + "-" + Date.now(),
+      id: createInvoiceItemId(`prc-${plan.id}`),
       name: `Paket ${plan.name}`,
       description: `${plan.description}\nTermasuk: ${plan.features.slice(0, 3).join(", ")}`,
       type: "pricing",
@@ -205,7 +186,7 @@ export default function InvoiceFormModal({
 
   const handleAddFromService = (svc: ServiceItem) => {
     const newItem: InvoiceItem = {
-      id: "svc-" + svc.id + "-" + Date.now(),
+      id: createInvoiceItemId(`svc-${svc.id}`),
       name: `Layanan ${svc.title}`,
       description: svc.description,
       type: "service",
@@ -297,9 +278,10 @@ export default function InvoiceFormModal({
       }
 
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error saving invoice:", err);
-      toast(`Gagal menyimpan invoice: ${err.message || "Terjadi kesalahan"}`, "error");
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan invoice";
+      toast(`Gagal menyimpan invoice: ${msg}`, "error");
     } finally {
       setSaving(false);
     }
@@ -611,7 +593,7 @@ export default function InvoiceFormModal({
                         min={1}
                         value={item.quantity}
                         onChange={(e) =>
-                          handleItemChange(index, "quantity", Math.max(1, parseInt(e.target.value) || 1))
+                          handleItemChange(index, "quantity", Math.max(1, parseInt(e.target.value, 10) || 1))
                         }
                         className={inputClass}
                         required
@@ -629,7 +611,7 @@ export default function InvoiceFormModal({
                         step={1000}
                         value={item.unitPrice}
                         onChange={(e) =>
-                          handleItemChange(index, "unitPrice", Math.max(0, parseInt(e.target.value) || 0))
+                          handleItemChange(index, "unitPrice", Math.max(0, parseInt(e.target.value, 10) || 0))
                         }
                         className={inputClass}
                         required

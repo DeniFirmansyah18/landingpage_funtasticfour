@@ -21,13 +21,9 @@ import {
   Trash2,
   CheckCircle2,
   Clock,
-  FileCheck2,
   AlertCircle,
-  Filter,
-  DollarSign,
   Building2,
   User,
-  ArrowUpDown,
   Sparkles,
   Loader2,
 } from "lucide-react";
@@ -47,12 +43,11 @@ export default function AdminInvoicePage() {
   const [printInvoice, setPrintInvoice] = useState<InvoiceDocument | null>(null);
 
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [seedingSample, setSeedingSample] = useState(false);
 
   // Financial calculations
   const stats = useMemo(() => {
-    let totalCount = invoices.length;
+    const totalCount = invoices.length;
     let unpaidCount = 0;
     let unpaidAmount = 0;
     let paidCount = 0;
@@ -127,22 +122,21 @@ export default function AdminInvoicePage() {
         }`,
         "success"
       );
-    } catch (err: any) {
-      toast(`Gagal mengubah status: ${err.message}`, "error");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan";
+      toast(`Gagal mengubah status: ${msg}`, "error");
     }
   };
 
   const handleDelete = async () => {
     if (!deleteTargetId) return;
-    setDeleting(true);
     try {
       await deleteItem("invoices", deleteTargetId);
       toast("Invoice berhasil dihapus.", "success");
       setDeleteTargetId(null);
-    } catch (err: any) {
-      toast(`Gagal menghapus: ${err.message}`, "error");
-    } finally {
-      setDeleting(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan";
+      toast(`Gagal menghapus: ${msg}`, "error");
     }
   };
 
@@ -204,8 +198,9 @@ export default function AdminInvoicePage() {
 
       await addItem("invoices", sample);
       toast("Contoh invoice penagihan berhasil ditambahkan!", "success");
-    } catch (err: any) {
-      toast(`Gagal menambahkan contoh: ${err.message}`, "error");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan";
+      toast(`Gagal menambahkan contoh: ${msg}`, "error");
     } finally {
       setSeedingSample(false);
     }
@@ -218,7 +213,7 @@ export default function AdminInvoicePage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest">
-              // MANAGEMENT
+              {"// MANAGEMENT"}
             </span>
           </div>
           <h1 className="font-display text-2xl md:text-3xl text-white mt-1">
@@ -552,33 +547,38 @@ export default function AdminInvoicePage() {
       )}
 
       {/* Form Modal (Create / Edit) */}
-      <InvoiceFormModal
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSaved={() => {
-          // Handled via real-time useCollection
-        }}
-        initialData={editingInvoice}
-        existingCount={invoices.length}
-      />
+      {isFormOpen && (
+        <InvoiceFormModal
+          key={editingInvoice?.id || "create-invoice"}
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          onSaved={() => {
+            // Real-time listener updates table
+          }}
+          initialData={editingInvoice}
+          existingCount={invoices.length}
+        />
+      )}
 
       {/* Print View Modal (A4 Print Preview) */}
-      <InvoicePrintView
-        isOpen={isPrintOpen}
-        onClose={() => {
-          setIsPrintOpen(false);
-          setPrintInvoice(null);
-        }}
-        invoice={printInvoice}
-      />
+      {isPrintOpen && printInvoice && (
+        <InvoicePrintView
+          isOpen={isPrintOpen}
+          onClose={() => {
+            setIsPrintOpen(false);
+            setPrintInvoice(null);
+          }}
+          invoice={printInvoice}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
-        isOpen={!!deleteTargetId}
+        open={!!deleteTargetId}
         title="Hapus Dokumen Invoice"
         message="Apakah Anda yakin ingin menghapus invoice ini secara permanen dari database? Dokumen yang sudah dihapus tidak dapat dipulihkan."
-        confirmText="Hapus Sekarang"
-        loading={deleting}
+        confirmLabel="Hapus Sekarang"
+        danger={true}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTargetId(null)}
       />
